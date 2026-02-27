@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 import Header from "./components/Header";
 import List from "./components/List";
 import Editor from "./components/Editor";
+import Exam from "./components/Exam";
 
 const mockData = [
   {
