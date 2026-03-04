@@ -1,36 +1,26 @@
 import "./List.css";
 import TodoItem from "./TodoItem";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useContext } from "react";
+import { TodoStateContext } from "../App";
 
-const List = ({ todos, onUpdate, onDelete }) => {
+const List = () => {
+  const todos = useContext(TodoStateContext); // ✅ 상태만 가져옴
   const [search, setSearch] = useState("");
 
-  const onChangeSearch = (e) => {
-    setSearch(e.target.value);
-  };
+  const onChangeSearch = (e) => setSearch(e.target.value);
 
-  const getFilteredData = () => {
-    if (search === "") {
-      return todos;
-    }
-    return todos.filter((todo) =>
-      todo.content.toLowerCase().includes(search.toLowerCase()),
-    );
-  };
-
-  const filteredTodos = getFilteredData();
+  const filteredTodos =
+    search === ""
+      ? todos
+      : todos.filter((todo) =>
+          todo.content.toLowerCase().includes(search.toLowerCase()),
+        );
 
   const { totalCount, doneCount, notDoneCount } = useMemo(() => {
-    console.log(" getAnalyzeData 호출!");
     const totalCount = todos.length;
     const doneCount = todos.filter((todo) => todo.isDone).length;
-    const notDoneCount = totalCount - doneCount;
-
-    return { totalCount, doneCount, notDoneCount };
+    return { totalCount, doneCount, notDoneCount: totalCount - doneCount };
   }, [todos]);
-  // 의존성 배열: deps
-
-  // const { totalCount, doneCount, notDoneCount } = getAnalyzeData();
 
   return (
     <div className="List">
@@ -40,6 +30,7 @@ const List = ({ todos, onUpdate, onDelete }) => {
         <div>done: {doneCount}</div>
         <div>notDone: {notDoneCount}</div>
       </div>
+
       <input
         value={search}
         onChange={onChangeSearch}
@@ -47,16 +38,9 @@ const List = ({ todos, onUpdate, onDelete }) => {
       />
 
       <div className="todos_wrapper">
-        {filteredTodos.map((todo) => {
-          return (
-            <TodoItem
-              key={todo.id}
-              {...todo}
-              onUpdate={onUpdate}
-              onDelete={onDelete}
-            />
-          );
-        })}
+        {filteredTodos.map((todo) => (
+          <TodoItem key={todo.id} {...todo} />
+        ))}
       </div>
     </div>
   );

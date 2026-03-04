@@ -1,16 +1,12 @@
 import "./TodoItem.css";
-import { memo } from "react";
+import { memo, useContext } from "react";
+import { TodoDispatchContext } from "../App";
 
-const TodoItem = ({ id, isDone, content, date, onUpdate, onDelete }) => {
-  console.log("TodoItem 렌더:", id);
+const TodoItem = ({ id, isDone, content, date }) => {
+  const { onUpdate, onDelete } = useContext(TodoDispatchContext);
 
-  const onChangeCheckbox = () => {
-    onUpdate(id);
-  };
-
-  const onClickDeleteButton = () => {
-    onDelete(id);
-  };
+  const onChangeCheckbox = () => onUpdate(id);
+  const onClickDeleteButton = () => onDelete(id);
 
   return (
     <div className="TodoItem">
