@@ -1,11 +1,12 @@
 import "./App.css";
-import { useReducer, useRef, createContext } from "react";
+import { useReducer, useRef, createContext, lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Diary from "./pages/Diary";
-import New from "./pages/New";
-import Notfound from "./pages/Notfound";
-import Edit from "./pages/Edit";
+
+const Home = lazy(() => import("./pages/Home"));
+const Diary = lazy(() => import("./pages/Diary"));
+const New = lazy(() => import("./pages/New"));
+const Notfound = lazy(() => import("./pages/Notfound"));
+const Edit = lazy(() => import("./pages/Edit"));
 
 const mockData = [
   {
@@ -94,13 +95,15 @@ function App() {
             onDelete,
           }}
         >
-          <Routes>
-            <Route path="/" element={<Home data={data} />} />
-            <Route path="/new" element={<New />} />
-            <Route path="/diary/:id" element={<Diary />} />
-            <Route path="/edit/:id" element={<Edit />} />
-            <Route path="*" element={<Notfound />} />
-          </Routes>
+          <Suspense fallback={<div>로딩중...</div>}>
+            <Routes>
+              <Route path="/" element={<Home data={data} />} />
+              <Route path="/new" element={<New />} />
+              <Route path="/diary/:id" element={<Diary />} />
+              <Route path="/edit/:id" element={<Edit />} />
+              <Route path="*" element={<Notfound />} />
+            </Routes>
+          </Suspense>
         </DiaryDispatchContext.Provider>
       </DiaryStateContext.Provider>
     </>

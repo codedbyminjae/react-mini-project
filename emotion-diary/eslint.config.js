@@ -9,10 +9,13 @@ export default defineConfig([
   globalIgnores(["dist"]),
   {
     files: ["**/*.{js,jsx}"],
+    plugins: {
+      "react-hooks": reactHooks,
+    },
     extends: [
       js.configs.recommended,
       react.configs.flat.recommended,
-      reactHooks.configs.recommended,
+      react.configs.flat["jsx-runtime"],
       reactRefresh.configs.vite,
     ],
     languageOptions: {
@@ -34,6 +37,10 @@ export default defineConfig([
       "no-console": "off",
       "no-debugger": "warn",
       "react-refresh/only-export-components": "warn",
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
 
       "eqeqeq": ["error", "always"],
       "curly": ["error", "all"],

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import DiaryList from "../components/DiaryList";
@@ -29,7 +29,10 @@ const getMonthlyData = (pivotDate, data) => {
 const Home = ({ data }) => {
   const [pivotDate, setPivotDate] = useState(new Date());
 
-  const monthlyData = getMonthlyData(pivotDate, data);
+  const monthlyData = useMemo(
+    () => getMonthlyData(pivotDate, data),
+    [pivotDate, data],
+  );
   console.log(monthlyData);
 
   const onIncreaseMonth = () => {

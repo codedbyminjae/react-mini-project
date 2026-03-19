@@ -2,7 +2,7 @@ import Button from "./Button";
 import "./DiaryList.css";
 import DiaryItem from "./DiaryItem";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 const DiaryList = ({ data = [] }) => {
   const nav = useNavigate();
@@ -22,7 +22,7 @@ const DiaryList = ({ data = [] }) => {
     });
   };
 
-  const sortedData = getSortedData();
+  const sortedData = useMemo(() => getSortedData(), [data, sortType]);
 
   return (
     <div className="DiaryList">
