@@ -1,36 +1,16 @@
 import "./App.css";
-import { useReducer, useRef, createContext, lazy, Suspense } from "react";
+import { useReducer, createContext, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-
-const Home = lazy(() => import("./pages/Home"));
-const Diary = lazy(() => import("./pages/Diary"));
-const New = lazy(() => import("./pages/New"));
-const Notfound = lazy(() => import("./pages/Notfound"));
-const Edit = lazy(() => import("./pages/Edit"));
-
-const mockData = [
-  {
-    id: 1,
-    createdDate: new Date("2026-03-17").getTime(),
-    emotionId: 1,
-    content: "1번 일기 내용",
-  },
-  {
-    id: 2,
-    createdDate: new Date("2026-03-16").getTime(),
-    emotionId: 2,
-    content: "2번 일기 내용",
-  },
-  {
-    id: 3,
-    createdDate: new Date("2026-02-04").getTime(),
-    emotionId: 3,
-    content: "3번 일기 내용",
-  },
-];
+import Home from "./pages/Home";
+import Diary from "./pages/Diary";
+import New from "./pages/New";
+import Notfound from "./pages/Notfound";
+import Edit from "./pages/Edit";
 
 function reducer(state, action) {
   switch (action.type) {
+    case "INIT":
+      return action.data;
     case "CREATE":
       return [action.data, ...state];
     case "UPDATE":
@@ -38,7 +18,7 @@ function reducer(state, action) {
         String(item.id) === String(action.data.id) ? action.data : item,
       );
     case "DELETE":
-      return state.filter((item) => String(item.id) !== String(action.id));
+      return state.filter((item) => String(item.id) !== String(action.data.id));
     default:
       return state;
   }
@@ -47,24 +27,46 @@ function reducer(state, action) {
 const DiaryStateContext = createContext();
 const DiaryDispatchContext = createContext();
 
-function App() {
-  const [data, dispatch] = useReducer(reducer, mockData);
-  const idRef = useRef(4);
+const initializer = () => {
+  const storedData = localStorage.getItem("diary");
+  if (!storedData) {
+    return [];
+  }
 
-  // 새로운 일기 추가
+  const parsedData = JSON.parse(storedData);
+  return Array.isArray(parsedData) ? parsedData : [];
+};
+
+const getNextId = (diaryList) => {
+  const usedIds = new Set(diaryList.map((item) => Number(item.id)));
+  let nextId = 1;
+
+  while (usedIds.has(nextId)) {
+    nextId += 1;
+  }
+
+  return nextId;
+};
+
+function App() {
+  const [data, dispatch] = useReducer(reducer, undefined, initializer);
+
+  useEffect(() => {
+    localStorage.setItem("diary", JSON.stringify(data));
+  }, [data]);
+
   const onCreate = (createdDate, emotionId, content) => {
-    // 새로운 일기 생성
     dispatch({
       type: "CREATE",
       data: {
-        id: idRef.current++,
+        id: getNextId(data),
         createdDate,
         emotionId,
         content,
       },
     });
   };
-  // 기존 일기 수정
+
   const onUpdate = (id, createdDate, emotionId, content) => {
     dispatch({
       type: "UPDATE",
@@ -77,11 +79,10 @@ function App() {
     });
   };
 
-  // 기존 일기 삭제
   const onDelete = (id) => {
     dispatch({
       type: "DELETE",
-      id,
+      data: { id },
     });
   };
 
@@ -95,15 +96,13 @@ function App() {
             onDelete,
           }}
         >
-          <Suspense fallback={<div>로딩중...</div>}>
-            <Routes>
-              <Route path="/" element={<Home data={data} />} />
-              <Route path="/new" element={<New />} />
-              <Route path="/diary/:id" element={<Diary />} />
-              <Route path="/edit/:id" element={<Edit />} />
-              <Route path="*" element={<Notfound />} />
-            </Routes>
-          </Suspense>
+          <Routes>
+            <Route path="/" element={<Home data={data} />} />
+            <Route path="/new" element={<New />} />
+            <Route path="/diary/:id" element={<Diary />} />
+            <Route path="/edit/:id" element={<Edit />} />
+            <Route path="*" element={<Notfound />} />
+          </Routes>
         </DiaryDispatchContext.Provider>
       </DiaryStateContext.Provider>
     </>

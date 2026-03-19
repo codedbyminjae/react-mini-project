@@ -12,17 +12,14 @@ const DiaryList = ({ data = [] }) => {
     setSortType(e.target.value);
   };
 
-  const getSortedData = () => {
+  const sortedData = useMemo(() => {
     return data.toSorted((a, b) => {
       if (sortType === "oldest") {
         return Number(a.createdDate) - Number(b.createdDate);
-      } else {
-        return Number(b.createdDate) - Number(a.createdDate);
       }
+      return Number(b.createdDate) - Number(a.createdDate);
     });
-  };
-
-  const sortedData = useMemo(() => getSortedData(), [data, sortType]);
+  }, [data, sortType]);
 
   return (
     <div className="DiaryList">

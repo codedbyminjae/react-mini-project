@@ -1,6 +1,6 @@
 export const getStringedDate = (targetDate) => {
   // 날짜 -> yyyy-mm-dd 형태의 문자열로 반환
-  let year = targetDate.getFullYear();
+  const year = targetDate.getFullYear();
   let month = targetDate.getMonth() + 1;
   let date = targetDate.getDate();
 

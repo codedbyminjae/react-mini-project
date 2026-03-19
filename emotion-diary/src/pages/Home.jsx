@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import DiaryList from "../components/DiaryList";
+import usePageTitle from "../hooks/usePageTitle";
 
 const getMonthlyData = (pivotDate, data) => {
   const beginTime = new Date(
@@ -27,6 +28,7 @@ const getMonthlyData = (pivotDate, data) => {
 };
 
 const Home = ({ data }) => {
+  usePageTitle("감정 일기장");
   const [pivotDate, setPivotDate] = useState(new Date());
 
   const monthlyData = useMemo(
